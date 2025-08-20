@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import ExcelUploader from "../components/ExcelUploader";
+import ExcelUploader from "../Components/ExcelUploader";
 
 export default function AiQbGenerator() {
   const [platforms, setPlatforms] = useState({ instagram: false, whatsapp: false, facebook: false });
