@@ -66,7 +66,7 @@ function Home() {
       </section>
 
       {/* GitHub Repos */}
-      <section className="py-12 px-6 bg-gray-100 text-center">
+      <section className="py-6 px-6 bg-gray-100 text-center">
         <h2 className="text-2xl font-bold mb-6">Explore Our Code</h2>
         <div className="flex justify-center gap-6">
           <a
