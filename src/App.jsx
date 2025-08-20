@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
-import Header from "./components/Header";
+import Header from "./Components/Header";
 import AiQbGenerator from "./pages/AiQbGenerator";
 import QB from "./pages/QB";
 import SurveyMonitor from "./pages/SurveyMonitor";
