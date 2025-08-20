@@ -20,7 +20,7 @@ function App() {
         <Route path="/about" element={<About />} />
       </Routes>
       {/* Footer */}
-      <footer className="text-center py-6 border-t border-gray-300 text-gray-600">
+      <footer className="text-center py-6  border-gray-300 text-gray-600">
         <p>© {new Date().getFullYear()} Project Narad. All Rights Reserved.</p>
       </footer>
     </Router>
