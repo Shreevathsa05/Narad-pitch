@@ -1,7 +1,11 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 
 function Home() {
+  useEffect(()=>{
+    const res = fetch(`https://narad-latest.onrender.com/`)
+    console.log(res)
+  },[])
   return (
     <div className="min-h-screen bg-gradient-to-br from-white via-gray-50 to-gray-200 text-black flex flex-col">
 
@@ -16,55 +20,6 @@ function Home() {
     accurate data-driven policymaking.
   </p>
 
-  {/* Main CTA */}
-  <div className="mt-10 flex justify-center gap-4">
-    <Link
-      to="/questionbank"
-      className="bg-black text-white px-6 py-3 rounded-lg shadow hover:bg-gray-800 transition"
-    >
-      Get Started
-    </Link>
-    <Link
-      to="/about"
-      className="bg-white border border-black px-6 py-3 rounded-lg shadow hover:bg-gray-100 transition"
-    >
-      Learn More
-    </Link>
-  </div>
-
-  {/* Stylish Quick Links */}
-  <div className="mt-14 flex flex-wrap justify-center gap-4">
-    <Link
-      to="/aigenerate"
-      className="px-5 py-2 rounded-full border border-gray-400 text-gray-700 hover:bg-black hover:text-white transition"
-    >
-      Generate Set of Questions
-    </Link>
-    <Link
-      to="/questionbank"
-      className="px-5 py-2 rounded-full border border-gray-400 text-gray-700 hover:bg-black hover:text-white transition"
-    >
-      Generated Questions
-    </Link>
-    <Link
-      to="/surveymonitor"
-      className="px-5 py-2 rounded-full border border-gray-400 text-gray-700 hover:bg-black hover:text-white transition"
-    >
-      Survey Monitor
-    </Link>
-    <Link
-      to="/analytics"
-      className="px-5 py-2 rounded-full border border-gray-400 text-gray-700 hover:bg-black hover:text-white transition"
-    >
-      Analytics
-    </Link>
-    <Link
-      to="/about"
-      className="px-5 py-2 rounded-full border border-gray-400 text-gray-700 hover:bg-black hover:text-white transition"
-    >
-      About
-    </Link>
-  </div>
 </section>
 
 
