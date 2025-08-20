@@ -1,21 +1,30 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
-import Home from './Components/Home'
-import Workflow from './Components/Workflow'
-import Report from './Components/Report'
-import Header from './Components/Header'
-
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Home from "./pages/Home";
+import Header from "./components/Header";
+import AiQbGenerator from "./pages/AiQbGenerator";
+import QB from "./pages/QB";
+import SurveyMonitor from "./pages/SurveyMonitor";
+import Analytics from "./pages/Analytics";
+import About from "./pages/About";
 
 function App() {
   return (
     <Router>
-      <Header/>
+      <Header />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/workflow" element={<Workflow />} />
-        <Route path="/report" element={<Report />} />
+        <Route path="/aigenerate" element={<AiQbGenerator />} />
+        <Route path="/questionbank" element={<QB />} />
+        <Route path="/surveymonitor" element={<SurveyMonitor />} />
+        <Route path="/analytics" element={<Analytics />} />
+        <Route path="/about" element={<About />} />
       </Routes>
+      {/* Footer */}
+      <footer className="text-center py-6 border-t border-gray-300 text-gray-600">
+        <p>© {new Date().getFullYear()} Project Narad. All Rights Reserved.</p>
+      </footer>
     </Router>
-  )
+  );
 }
 
-export default App
+export default App;

@@ -1,6 +1,6 @@
 import React from 'react'
 
-function Workflow() {
+function Analytics() {
   return (
     <div>
       
@@ -8,4 +8,4 @@ function Workflow() {
   )
 }
 
-export default Workflow
+export default Analytics
