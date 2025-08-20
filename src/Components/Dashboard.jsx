@@ -4,6 +4,7 @@ import {
   ResponsiveContainer, BarChart, Bar, LineChart, Line,
   XAxis, YAxis, Tooltip, CartesianGrid, Legend,
 } from 'recharts';
+import * as XLSX from 'xlsx';
 import './Dashboard.css';
 
 const rawData = [
@@ -127,13 +128,13 @@ const aggregateData = (data, key) => {
 const Dashboard = () => {
   const [displayData, setDisplayData] = useState(rawData);
   const [filters, setFilters] = useState({ age: '', region: '', condition: '', platform: '' });
-  
+
   // Step 3: Memoize the aggregated data so it's not recalculated on every render
   const ageData = useMemo(() => aggregateData(rawData, 'age'), []);
   const regionData = useMemo(() => aggregateData(rawData, 'region'), []);
   const conditionData = useMemo(() => aggregateData(rawData, 'condition'), []);
   const platformData = useMemo(() => aggregateData(rawData, 'platform'), []);
-  
+
   const ageOptions = getUniqueValues(rawData, 'age');
   const regionOptions = getUniqueValues(rawData, 'region');
   const conditionOptions = getUniqueValues(rawData, 'condition');
@@ -152,7 +153,7 @@ const Dashboard = () => {
     const { name, value } = e.target;
     setFilters(prevFilters => ({ ...prevFilters, [name]: value, }));
   };
-  
+
   const resetFilters = () => { setFilters({ age: '', region: '', condition: '', platform: '' }); };
   const handleJsonExport = () => {
     const jsonString = `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(displayData, null, 2))}`;
@@ -160,6 +161,78 @@ const Dashboard = () => {
     link.href = jsonString;
     link.download = "filtered_survey_data.json";
     link.click();
+  };
+
+  const handleExcelExport = () => {
+    try {
+      // Create a new workbook
+      const workbook = XLSX.utils.book_new();
+
+      // Convert the filtered data to worksheet
+      const worksheet = XLSX.utils.json_to_sheet(displayData, {
+        header: ['id', 'age', 'region', 'condition', 'platform', 'date']
+      });
+
+      // Set column widths for better formatting
+      const columnWidths = [
+        { wch: 12 }, // Respondent ID
+        { wch: 10 }, // Age Group
+        { wch: 10 }, // Region
+        { wch: 18 }, // Financial Condition
+        { wch: 10 }, // Platform
+        { wch: 12 }  // Response Date
+      ];
+      worksheet['!cols'] = columnWidths;
+
+      // Add custom headers
+      const customHeaders = {
+        'A1': { v: 'Respondent ID', t: 's' },
+        'B1': { v: 'Age Group', t: 's' },
+        'C1': { v: 'Region', t: 's' },
+        'D1': { v: 'Financial Condition', t: 's' },
+        'E1': { v: 'Platform', t: 's' },
+        'F1': { v: 'Response Date', t: 's' }
+      };
+
+      // Apply custom headers
+      Object.keys(customHeaders).forEach(cell => {
+        worksheet[cell] = customHeaders[cell];
+      });
+
+      // Add the worksheet to workbook
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Survey Data');
+
+      // Create summary sheet with aggregated data
+      const summaryData = [
+        { Category: 'Total Responses', Value: displayData.length },
+        { Category: '', Value: '' }, // Empty row for spacing
+        { Category: 'Age Group Breakdown', Value: '' },
+        ...aggregateData(displayData, 'age').map(item => ({ Category: item.name, Value: item.count })),
+        { Category: '', Value: '' }, // Empty row for spacing
+        { Category: 'Region Breakdown', Value: '' },
+        ...aggregateData(displayData, 'region').map(item => ({ Category: item.name, Value: item.count })),
+        { Category: '', Value: '' }, // Empty row for spacing
+        { Category: 'Financial Condition Breakdown', Value: '' },
+        ...aggregateData(displayData, 'condition').map(item => ({ Category: item.name, Value: item.count })),
+        { Category: '', Value: '' }, // Empty row for spacing
+        { Category: 'Platform Breakdown', Value: '' },
+        ...aggregateData(displayData, 'platform').map(item => ({ Category: item.name, Value: item.count }))
+      ];
+
+      const summaryWorksheet = XLSX.utils.json_to_sheet(summaryData);
+      summaryWorksheet['!cols'] = [{ wch: 25 }, { wch: 10 }];
+      XLSX.utils.book_append_sheet(workbook, summaryWorksheet, 'Summary');
+
+      // Generate filename with current date
+      const currentDate = new Date().toISOString().split('T')[0];
+      const filename = `survey_data_${currentDate}.xlsx`;
+
+      // Write and download the file
+      XLSX.writeFile(workbook, filename);
+    } catch (error) {
+      console.error('Error exporting to Excel:', error);
+      alert('Error exporting to Excel. Please try again.');
+    }
   };
 
   return (
@@ -207,7 +280,7 @@ const Dashboard = () => {
               </ResponsiveContainer>
             </div>
           </div>
-          
+
           <div className="card data-card">
             <div className="data-card-header">
               <p className="card-title">Responses by Region</p>
@@ -247,14 +320,14 @@ const Dashboard = () => {
           </div>
 
           <div className="card data-card">
-             <div className="data-card-header">
+            <div className="data-card-header">
               <p className="card-title">Responses by Platform</p>
               <p className="card-value">{rawData.length}</p>
               <p className="card-change">Total Responses</p>
             </div>
             <div className="chart-placeholder">
-               <ResponsiveContainer width="100%" height="100%">
-                 {/* For horizontal bar chart, use BarChart with layout="vertical" */}
+              <ResponsiveContainer width="100%" height="100%">
+                {/* For horizontal bar chart, use BarChart with layout="vertical" */}
                 <BarChart data={platformData} layout="vertical" margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
                   <CartesianGrid strokeDasharray="3 3" horizontal={false} />
                   <XAxis type="number" fontSize={12} tickLine={false} />
@@ -267,7 +340,7 @@ const Dashboard = () => {
           </div>
         </div>
       </section>
-      
+
       <div className="grid-2-col">
         <section>
           <h2>Raw Data</h2>
@@ -291,9 +364,9 @@ const Dashboard = () => {
 
         <section>
           <div className="card filter-card">
-             <div className="filter-header">
-                <h2>Filters</h2>
-                <button className="btn-link" onClick={resetFilters}>Reset</button>
+            <div className="filter-header">
+              <h2>Filters</h2>
+              <button className="btn-link" onClick={resetFilters}>Reset</button>
             </div>
             <div className="filter-grid">
               <div className="filter-group">
@@ -327,14 +400,32 @@ const Dashboard = () => {
             </div>
           </div>
 
-          <div className="card export-card">
-            <h2>JSON Export</h2>
-            <button className="btn btn-secondary" onClick={handleJsonExport}>Download JSON</button>
+          <div className="max-w-sm mx-auto bg-white rounded-xl shadow-md p-6 text-center">
+            <h2 className="text-lg font-semibold text-gray-800 mb-4">
+              Export Options
+            </h2>
+
+            <div className="flex flex-col gap-3">
+              <button
+                onClick={handleJsonExport}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium text-sm hover:bg-blue-700 transition cursor-pointer"
+              >
+                Download JSON
+              </button>
+
+              <button
+                onClick={handleExcelExport}
+                className="px-4 py-2 bg-green-600 text-white rounded-lg font-medium text-sm hover:bg-green-700 transition cursor-pointer"
+              >
+                Download Excel
+              </button>
+            </div>
           </div>
+
         </section>
       </div>
 
-      
+
     </div>
   );
 };
